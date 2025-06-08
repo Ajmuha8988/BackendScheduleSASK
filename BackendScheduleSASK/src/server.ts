@@ -1,0 +1,91 @@
+﻿import express from 'express';
+import cors from 'cors';
+import * as sql from 'mssql';
+import sqlConfig from './db/config/config';
+import { connectToDatabase } from './db/connection/connection';
+import registerUser from './db/post/register';
+import authorizationUser from './db/post/authorization';
+import addGroup from './db/post/createGroup';
+import addLesson from './db/post/createLessons';
+import addRoom from './db/post/createRooms';
+import addMembers from './db/post/AddMembers';
+import addPSchedules from './db/post/AddPSchedule';
+import changeGroup from './db/post/ChangeGroup';
+import addGeneralBurden from './db/post/createBurden';
+import addSubGeneralBurden from './db/post/createSubBurden';
+import addPlans from './db/post/AddPlan';
+import removeGroup from './db/delete/removeGroup';
+import deleteMember from './db/delete/DeleteMember';
+import deletePSchedule from './db/delete/DeletePSchedule';
+import logOut from './db/delete/LogOut';
+import deletePlanFirstSemester from './db/delete/DeletePlanFirstSemester';
+import deletePlanSecondSemester from './db/delete/DeletePlanSecondSemester';
+import { getTeacherInBurden } from './db/get/GetTeacherInBurden';
+import { getPlan } from './db/get/GetPlan';
+import { getIDStudent } from './db/get/GetIDStudent';
+import { getAllgroups } from './db/get/GetAllGroups';
+import { getAlllessonss } from './db/get/GetAllLessons';
+import { getAllrooms } from './db/get/GetAllRooms';
+import { getTeacherID } from './db/get/GetTeacher';
+import { getRoleByUserID } from './db/get/getRoleID';
+import { getMembers } from './db/get/GetMembers';
+import { getAllteachers } from './db/get/GetAllTeachers';
+import { getAllSubBurden } from './db/get/GetAllSubBurden';
+import { getPschedulePartNumerator } from './db/get/GetAllPartPScheduleNumerator';
+import { getPschedulePartDenumerator } from './db/get/GetAllPartPScheduleDenumerator';
+import { getNameGroupInGroup } from './db/get/GetNameGroupInConstructor';
+import { getPlanLesson } from './db/get/GetPlanLesson';
+import ValidateDataGroup from './db/get/validatedatagroup';
+import cookieParser from 'cookie-parser';
+
+const app = express();
+const corsOptions = {
+    origin: ["http://localhost:49230"],
+    credentials: true,
+};
+app.use(cors(corsOptions));
+app.options('*', cors());
+app.use(express.json());
+app.use(cookieParser());
+connectToDatabase().then(() => {
+    app.get('/', (req, res) => {
+        res.json({ status: "Окей" });
+    });
+
+    app.listen(8080, () => {
+        console.log('Сервер запущен на порту: 8080');
+    });
+});
+app.get('/ID_Student', getIDStudent);
+app.get('/RoleID', getRoleByUserID);
+app.get('/ID_Teacher', getTeacherID);
+app.get('/AllGroups', getAllgroups);
+app.get('/AllLessons', getAlllessonss);
+app.get('/AllRooms', getAllrooms);
+app.get('/AllTeachers', getAllteachers);
+app.get('/AllSubBurden', getAllSubBurden);
+app.get('/Plan', getPlan);
+app.get('/administrator/PScheduleNumeratorPart', getPschedulePartNumerator);
+app.get('/administrator/PScheduleDenumeratorPart', getPschedulePartDenumerator);
+app.get('/administrator/GroupInConstructor', getNameGroupInGroup);
+app.get('/administrator/GetTeacherInBurden', getTeacherInBurden);
+app.get('/administrator/GetPlanLesson', getPlanLesson);
+app.get('/teacher/validategroup', ValidateDataGroup);
+app.get('/teacher/Members', getMembers);
+app.post('/teacher/AddMember', addMembers);
+app.post('/logout', logOut);
+app.post('/register', registerUser);
+app.post('/authorization', authorizationUser);
+app.post('/teacher/addGroup', addGroup);
+app.post('/administrator/addRoom', addRoom);
+app.post('/administrator/addLesson', addLesson);
+app.post('/administrator/addPSchedules', addPSchedules);
+app.post('/administrator/addGeneralBurden', addGeneralBurden);
+app.post('/administrator/addSubGeneralBurden', addSubGeneralBurden);
+app.post('/administrator/addPlan', addPlans);
+app.post('/administrator/changeGroup', changeGroup);
+app.delete('/teacher/exitgroup', removeGroup);
+app.delete('/teacher/deleteStudentInGroup', deleteMember);
+app.delete('/administrator/deleteFirstPlan', deletePlanFirstSemester);
+app.delete('/administrator/deleteSecondPlan', deletePlanSecondSemester);
+app.delete('/administrator/deletePSchedule', deletePSchedule);
