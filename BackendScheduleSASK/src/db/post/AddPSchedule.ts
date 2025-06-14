@@ -139,7 +139,7 @@ export default async function addPSchedules(req: any, res: any): Promise<void> {
                                         res.cookie('jwtpuorg', token, {
                                             httpOnly: true,
                                             secure: true,
-                                            sameSite: 'strict',
+                                            sameSite: 'none',
                                             expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
                                         });
                                         res.status(201).json({
@@ -193,7 +193,7 @@ export default async function addPSchedules(req: any, res: any): Promise<void> {
                                                 res.cookie('jwtpuorg', token, {
                                                     httpOnly: true,
                                                     secure: true,
-                                                    sameSite: 'strict',
+                                                    sameSite: 'none',
                                                     expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
                                                 });
                                                 res.status(201).json({
@@ -236,7 +236,7 @@ export default async function addPSchedules(req: any, res: any): Promise<void> {
                                                     res.cookie('jwtpuorg', token, {
                                                         httpOnly: true,
                                                         secure: true,
-                                                        sameSite: 'strict',
+                                                        sameSite: 'none',
                                                         expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
                                                     });
                                                     res.status(201).json({
@@ -291,7 +291,7 @@ export default async function addPSchedules(req: any, res: any): Promise<void> {
                                         res.cookie('jwtpuorg', token, {
                                             httpOnly: true,
                                             secure: true,
-                                            sameSite: 'strict',
+                                            sameSite: 'none',
                                             expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
                                         });
                                         res.status(201).json({
@@ -458,7 +458,7 @@ export default async function addPSchedules(req: any, res: any): Promise<void> {
                                 res.cookie('jwtpuorg', token, {
                                     httpOnly: true,
                                     secure: true,
-                                    sameSite: 'strict',
+                                    sameSite: 'none',
                                     expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
                                 });
                                 res.status(201).json({

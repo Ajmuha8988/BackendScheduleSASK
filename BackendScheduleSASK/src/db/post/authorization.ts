@@ -39,7 +39,7 @@ export default async function authorizationUser(req: any, res: any): Promise<voi
             res.cookie('jwt', token, {
                 httpOnly: true, // Защищает от XSS атак
                 secure: true, // Использовать только через HTTPS
-                sameSite: 'strict', // Защищает от CSRF атак
+                sameSite: 'none', // Защищает от CSRF атак
                 expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), 
             });
             let uniqueIdFound = false;
