@@ -144,7 +144,7 @@ export default async function AuthorizationUser(email: string, password: string)
                             }
 
                         } else {
-
+                            return 'Капут'
                         }
                     }
                 }
@@ -152,7 +152,7 @@ export default async function AuthorizationUser(email: string, password: string)
                     return 'Администратор системы не назначил дату выхода на 2-ом семестре. Пожалуста, обратитесь к нему';
                 }
             } else {
-
+                return 'Капут'
             }
         }
         else {
