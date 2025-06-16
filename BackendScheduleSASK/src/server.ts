@@ -8,6 +8,7 @@ import authorizationUser from './db/post/authorization';
 import addGroup from './db/post/createGroup';
 import addLesson from './db/post/createLessons';
 import addRoom from './db/post/createRooms';
+import CreateDateSecondSemester from './db/post/createsecondsemesterdate';
 import addMembers from './db/post/AddMembers';
 import addPSchedules from './db/post/AddPSchedule';
 import changeGroup from './db/post/ChangeGroup';
@@ -37,6 +38,7 @@ import { getNameGroupInGroup } from './db/get/GetNameGroupInConstructor';
 import { getPlanLesson } from './db/get/GetPlanLesson';
 import ValidateDataGroup from './db/get/validatedatagroup';
 import cookieParser from 'cookie-parser';
+import { startTelegramBot } from './Telegram_bot/Telegram_bot';
 
 const app = express();
 const corsOptions = {
@@ -48,6 +50,7 @@ app.options('*', cors());
 app.use(express.json());
 app.use(cookieParser());
 connectToDatabase().then(() => {
+    startTelegramBot();
     app.get('/', (req, res) => {
         res.json({ status: "Окей" });
     });
@@ -79,6 +82,7 @@ app.post('/authorization', authorizationUser);
 app.post('/teacher/addGroup', addGroup);
 app.post('/administrator/addRoom', addRoom);
 app.post('/administrator/addLesson', addLesson);
+app.post('/administrator/addDateSecondSemester', CreateDateSecondSemester);
 app.post('/administrator/addPSchedules', addPSchedules);
 app.post('/administrator/addGeneralBurden', addGeneralBurden);
 app.post('/administrator/addSubGeneralBurden', addSubGeneralBurden);

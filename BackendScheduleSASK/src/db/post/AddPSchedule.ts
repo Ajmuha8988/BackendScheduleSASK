@@ -1,7 +1,7 @@
 ﻿import * as sql from 'mssql';
 import sqlConfig from '../config/config';
 import jwt from 'jsonwebtoken';
-
+import { calculateSemester } from '../utils/CalculateSemester'
 interface PScheduleRequestBody {
     NameGroup: string;
     ID_Lesson: bigint;
@@ -15,6 +15,7 @@ interface PScheduleRequestBody {
 
 
 export default async function addPSchedules(req: any, res: any): Promise<void> {
+    const { dataSemester } = calculateSemester();
     try {
         const body: PScheduleRequestBody = req.body;
         // Подключение к базе данных
@@ -23,28 +24,31 @@ export default async function addPSchedules(req: any, res: any): Promise<void> {
             const checkQueryTwo = `SELECT ID_PSchedule, ID_user, ID_Room FROM PSchedule WHERE 
             ID_Group = (Select ID_Group From Groups Where NameGroup = @id_Groups) AND
             NumberLessons = @numberLessons AND DaysOfWeek = @daysofweek AND
-            KindOfSchedules = @kindofschedules;`;
+            KindOfSchedules = @kindofschedules AND KindOfSemester = @kindofsemester ;`;
             const resultCheckTwo = await pool.request()
                 .input('id_Groups', sql.NVarChar, body.NameGroup)
                 .input('numberLessons', sql.Int, body.NumberLesson)
                 .input('daysofweek', sql.NVarChar, body.DaysOfWeek)
                 .input('kindofschedules', sql.NVarChar, body.KindOfSchedules)
+                .input('kindofsemester', sql.NVarChar, dataSemester)
                 .query(checkQueryTwo);
             const checkQueryTeachers = `SELECT ID_user, ID_Room FROM PSchedule WHERE
                 ID_user = (Select ID_TrueUser From TempIDUser Where Temp_ID_User = @id_Teachers) AND
                 NumberLessons = @numberLessons AND DaysOfWeek = @daysofweek AND
-                KindOfSchedules = @kindofschedules;`;
+                KindOfSchedules = @kindofschedules AND KindOfSemester = @kindofsemester;`;
 
             const resultCheckTeachers = await pool.request()
                 .input('id_Teachers', sql.BigInt, body.ID_user)
                 .input('numberLessons', sql.Int, body.NumberLesson)
                 .input('daysofweek', sql.NVarChar, body.DaysOfWeek)
                 .input('kindofschedules', sql.NVarChar, body.KindOfSchedules)
+                .input('kindofsemester', sql.NVarChar, dataSemester)
                 .query(checkQueryTeachers);
             const ValidateTeachersInRoom = `SELECT ID_user, ID_Room FROM PSchedule WHERE
                 ID_Room = @id_rooms AND ID_Group = (Select ID_Group From Groups Where NameGroup = @id_Groups)
                 AND NumberLessons = @numberLessons AND DaysOfWeek = @daysofweek AND
-                KindOfSchedules = @kindofschedules;`;
+                KindOfSchedules = @kindofschedules AND KindOfSemester = @kindofsemester;`;
+            console.log(dataSemester);
             console.log(body.ID_Room);
             console.log(body.NameGroup);
             console.log(body.NumberLesson);
@@ -56,17 +60,19 @@ export default async function addPSchedules(req: any, res: any): Promise<void> {
                 .input('numberLessons', sql.Int, body.NumberLesson)
                 .input('daysofweek', sql.NVarChar, body.DaysOfWeek)
                 .input('kindofschedules', sql.NVarChar, body.KindOfSchedules)
+                .input('kindofsemester', sql.NVarChar, dataSemester)
                 .query(ValidateTeachersInRoom);
             const ValidateTeachersInDay = `SELECT ID_Group FROM PSchedule WHERE
                                     ID_user = (Select ID_TrueUser  From TempIDUser Where Temp_ID_User = @id_Teachers) AND
                                     NumberLessons = @numberLessons AND DaysOfWeek = @daysofweek AND
-                                    KindOfSchedules = @kindofschedules;`;
+                                    KindOfSchedules = @kindofschedules AND KindOfSemester = @kindofsemester;`;
 
             const resultValidateTeachersInDay = await pool.request()
                 .input('id_Teachers', sql.BigInt, body.ID_user)
                 .input('numberLessons', sql.Int, body.NumberLesson)
                 .input('daysofweek', sql.NVarChar, body.DaysOfWeek)
                 .input('kindofschedules', sql.NVarChar, body.KindOfSchedules)
+                .input('kindofsemester', sql.NVarChar, dataSemester)
                 .query(ValidateTeachersInDay);
             console.log(resultValidateTeachersInRoom.recordset.length);
             console.log(resultValidateTeachersInDay.recordset.length);
@@ -84,7 +90,7 @@ export default async function addPSchedules(req: any, res: any): Promise<void> {
                 ID_Group = (Select ID_Group From Groups Where NameGroup = @id_Groups) AND
                 ID_user = (Select ID_TrueUser From TempIDUser Where Temp_ID_User = @id_Teachers) AND
                 NumberLessons = @numberLessons AND DaysOfWeek = @daysofweek AND
-                KindOfSchedules = @kindofschedules;`;
+                KindOfSchedules = @kindofschedules AND KindOfSemester = @kindofsemester;`;
 
                     const resultCheckTwoTeachers = await pool.request()
                         .input('id_Groups', sql.NVarChar, body.NameGroup)
@@ -92,6 +98,7 @@ export default async function addPSchedules(req: any, res: any): Promise<void> {
                         .input('numberLessons', sql.Int, body.NumberLesson)
                         .input('daysofweek', sql.NVarChar, body.DaysOfWeek)
                         .input('kindofschedules', sql.NVarChar, body.KindOfSchedules)
+                        .input('kindofsemester', sql.NVarChar, dataSemester)
                         .query(checkQueryTwoTeachers);
                     if (resultCheckTwoTeachers.recordset.length > 0) {
                         res.status(201).json({
@@ -108,12 +115,13 @@ export default async function addPSchedules(req: any, res: any): Promise<void> {
                                     const checkQueryRoom = `SELECT ID_PSchedule FROM PSchedule WHERE 
                                     ID_Room = @id_rooms AND
                                     NumberLessons = @numberLessons AND DaysOfWeek = @daysofweek AND
-                                    KindOfSchedules = @kindofschedules;`;
+                                    KindOfSchedules = @kindofschedules AND KindOfSemester = @kindofsemester;`;
                                     const resultCheckRoom = await pool.request()
                                         .input('id_rooms', sql.BigInt, body.ID_Room)
                                         .input('numberLessons', sql.Int, body.NumberLesson)
                                         .input('daysofweek', sql.NVarChar, body.DaysOfWeek)
                                         .input('kindofschedules', sql.NVarChar, body.KindOfSchedules)
+                                        .input('kindofsemester', sql.NVarChar, dataSemester)
                                         .query(checkQueryRoom);
                                     if (resultCheckRoom.recordset.length > 0) {
                                         res.status(201).json({
@@ -121,9 +129,9 @@ export default async function addPSchedules(req: any, res: any): Promise<void> {
                                         });
                                     } else {
                                         const insertQuery = `
-                                        INSERT INTO PSchedule (ID_Group, ID_Lesson, ID_Room, ID_user , NumberLessons, DaysOfWeek, KindOfSchedules)
+                                        INSERT INTO PSchedule (ID_Group, ID_Lesson, ID_Room, ID_user , NumberLessons, DaysOfWeek, KindOfSchedules, KindOfSemester)
                                         VALUES ((Select ID_Group From Groups Where NameGroup = @id_Groups), @id_Lesson, @id_Room,(Select ID_TrueUser From TempIDUser Where Temp_ID_User = @id_User),
-                                        @numberLessons, @daysofweek, @kindofschedules);`;
+                                        @numberLessons, @daysofweek, @kindofschedules, @kindofsemester);`;
                                         const InsertedResult = await pool.request()
                                             .input('id_Groups', sql.NVarChar, body.NameGroup)
                                             .input('id_Lesson', sql.BigInt, body.ID_Lesson)
@@ -132,6 +140,7 @@ export default async function addPSchedules(req: any, res: any): Promise<void> {
                                             .input('numberLessons', sql.Int, body.NumberLesson)
                                             .input('daysofweek', sql.NVarChar, body.DaysOfWeek)
                                             .input('kindofschedules', sql.NVarChar, body.KindOfSchedules)
+                                            .input('kindofsemester', sql.NVarChar, dataSemester)
                                             .query(insertQuery);
                                         const groupId = body.NameGroup;
                                         const payload = { id: groupId };
@@ -139,7 +148,7 @@ export default async function addPSchedules(req: any, res: any): Promise<void> {
                                         res.cookie('jwtpuorg', token, {
                                             httpOnly: true,
                                             secure: true,
-                                            sameSite: 'none',
+                                            sameSite: 'strict',
                                             expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
                                         });
                                         res.status(201).json({
@@ -154,12 +163,13 @@ export default async function addPSchedules(req: any, res: any): Promise<void> {
                                     const checkQueryGroups = `SELECT ID_Group FROM PSchedule WHERE
                                     ID_user = @id_Teachers AND
                                     NumberLessons = @numberLessons AND DaysOfWeek = @daysofweek AND
-                                    KindOfSchedules = @kindofschedules;`;
+                                    KindOfSchedules = @kindofschedules AND KindOfSemester = @kindofsemester;`;
                                     const resultCheckGroups = await pool.request()
                                         .input('id_Teachers', sql.BigInt, id_user)
                                         .input('numberLessons', sql.Int, body.NumberLesson)
                                         .input('daysofweek', sql.NVarChar, body.DaysOfWeek)
                                         .input('kindofschedules', sql.NVarChar, body.KindOfSchedules)
+                                        .input('kindofsemester', sql.NVarChar, dataSemester)
                                         .query(checkQueryGroups);
                                     if (resultCheckGroups.recordset.length === 2) {
                                         res.status(201).json({
@@ -175,9 +185,9 @@ export default async function addPSchedules(req: any, res: any): Promise<void> {
                                             if (resultCheckGroups.recordset.length === 0) {
                                                 console.log('Пиздец5');
                                                 const insertQuery = `
-                                                INSERT INTO PSchedule (ID_Group, ID_Lesson, ID_Room, ID_user , NumberLessons, DaysOfWeek, KindOfSchedules)
+                                                INSERT INTO PSchedule (ID_Group, ID_Lesson, ID_Room, ID_user , NumberLessons, DaysOfWeek, KindOfSchedules, KindOfSemester)
                                                 VALUES ((Select ID_Group From Groups Where NameGroup = @id_Groups), @id_Lesson, @id_Room,(Select ID_TrueUser From TempIDUser Where Temp_ID_User = @id_User),
-                                                @numberLessons, @daysofweek, @kindofschedules);`;
+                                                @numberLessons, @daysofweek, @kindofschedules, @kindofsemester);`;
                                                 const InsertedResult = await pool.request()
                                                     .input('id_Groups', sql.NVarChar, body.NameGroup)
                                                     .input('id_Lesson', sql.BigInt, body.ID_Lesson)
@@ -186,6 +196,7 @@ export default async function addPSchedules(req: any, res: any): Promise<void> {
                                                     .input('numberLessons', sql.Int, body.NumberLesson)
                                                     .input('daysofweek', sql.NVarChar, body.DaysOfWeek)
                                                     .input('kindofschedules', sql.NVarChar, body.KindOfSchedules)
+                                                    .input('kindofsemester', sql.NVarChar, dataSemester)
                                                     .query(insertQuery);
                                                 const groupId = body.NameGroup;
                                                 const payload = { id: groupId };
@@ -193,7 +204,7 @@ export default async function addPSchedules(req: any, res: any): Promise<void> {
                                                 res.cookie('jwtpuorg', token, {
                                                     httpOnly: true,
                                                     secure: true,
-                                                    sameSite: 'none',
+                                                    sameSite: 'strict',
                                                     expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
                                                 });
                                                 res.status(201).json({
@@ -204,12 +215,13 @@ export default async function addPSchedules(req: any, res: any): Promise<void> {
                                                 const checkQueryValidateGroups = `SELECT ID_Group FROM PSchedule WHERE
                                                 ID_Group = @id_Teachers AND
                                                 NumberLessons = @numberLessons AND DaysOfWeek = @daysofweek AND
-                                                KindOfSchedules = @kindofschedules;`;
+                                                KindOfSchedules = @kindofschedules AND KindOfSemester = @kindofsemester;`;
                                                 const resultCheckValidateGroups = await pool.request()
                                                     .input('id_Teachers', sql.BigInt, id_group)
                                                     .input('numberLessons', sql.Int, body.NumberLesson)
                                                     .input('daysofweek', sql.NVarChar, body.DaysOfWeek)
                                                     .input('kindofschedules', sql.NVarChar, body.KindOfSchedules)
+                                                    .input('kindofsemester', sql.NVarChar, dataSemester)
                                                     .query(checkQueryValidateGroups);
                                                 if (resultCheckValidateGroups.recordset.length === 2) {
                                                     res.status(201).json({
@@ -218,9 +230,9 @@ export default async function addPSchedules(req: any, res: any): Promise<void> {
                                                 }
                                                 else {
                                                     const insertQuery = `
-                                                    INSERT INTO PSchedule (ID_Group, ID_Lesson, ID_Room, ID_user , NumberLessons, DaysOfWeek, KindOfSchedules)
+                                                    INSERT INTO PSchedule (ID_Group, ID_Lesson, ID_Room, ID_user , NumberLessons, DaysOfWeek, KindOfSchedules, KindOfSemester)
                                                     VALUES ((Select ID_Group From Groups Where NameGroup = @id_Groups), @id_Lesson, @id_Room,(Select ID_TrueUser From TempIDUser Where Temp_ID_User = @id_User),
-                                                    @numberLessons, @daysofweek, @kindofschedules);`;
+                                                    @numberLessons, @daysofweek, @kindofschedules, @kindofsemester);`;
                                                     const InsertedResult = await pool.request()
                                                         .input('id_Groups', sql.NVarChar, body.NameGroup)
                                                         .input('id_Lesson', sql.BigInt, body.ID_Lesson)
@@ -229,6 +241,7 @@ export default async function addPSchedules(req: any, res: any): Promise<void> {
                                                         .input('numberLessons', sql.Int, body.NumberLesson)
                                                         .input('daysofweek', sql.NVarChar, body.DaysOfWeek)
                                                         .input('kindofschedules', sql.NVarChar, body.KindOfSchedules)
+                                                        .input('kindofsemester', sql.NVarChar, dataSemester)
                                                         .query(insertQuery);
                                                     const groupId = body.NameGroup;
                                                     const payload = { id: groupId };
@@ -236,7 +249,7 @@ export default async function addPSchedules(req: any, res: any): Promise<void> {
                                                     res.cookie('jwtpuorg', token, {
                                                         httpOnly: true,
                                                         secure: true,
-                                                        sameSite: 'none',
+                                                        sameSite: 'strict',
                                                         expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
                                                     });
                                                     res.status(201).json({
@@ -254,12 +267,13 @@ export default async function addPSchedules(req: any, res: any): Promise<void> {
                                 const checkQueryGroups = `SELECT ID_Group FROM PSchedule WHERE
                                 ID_user = @id_Teachers AND
                                 NumberLessons = @numberLessons AND DaysOfWeek = @daysofweek AND
-                                KindOfSchedules = @kindofschedules;`;
+                                KindOfSchedules = @kindofschedules AND KindOfSemester = @kindofsemester;`;
                                 const resultCheckGroups = await pool.request()
                                     .input('id_Teachers', sql.BigInt, id_user)
                                     .input('numberLessons', sql.Int, body.NumberLesson)
                                     .input('daysofweek', sql.NVarChar, body.DaysOfWeek)
                                     .input('kindofschedules', sql.NVarChar, body.KindOfSchedules)
+                                    .input('kindofsemester', sql.NVarChar, dataSemester)
                                     .query(checkQueryGroups);
                                 if (resultCheckGroups.recordset.length === 2) {
                                     res.status(201).json({
@@ -273,9 +287,9 @@ export default async function addPSchedules(req: any, res: any): Promise<void> {
                                     }
                                     else {
                                         const insertQuery = `
-                                        INSERT INTO PSchedule (ID_Group, ID_Lesson, ID_Room, ID_user , NumberLessons, DaysOfWeek, KindOfSchedules)
+                                        INSERT INTO PSchedule (ID_Group, ID_Lesson, ID_Room, ID_user , NumberLessons, DaysOfWeek, KindOfSchedules, KindOfSemester)
                                         VALUES ((Select ID_Group From Groups Where NameGroup = @id_Groups), @id_Lesson, @id_Room,(Select ID_TrueUser From TempIDUser Where Temp_ID_User = @id_User),
-                                        @numberLessons, @daysofweek, @kindofschedules);`;
+                                        @numberLessons, @daysofweek, @kindofschedules, @kindofsemester);`;
                                         const InsertedResult = await pool.request()
                                             .input('id_Groups', sql.NVarChar, body.NameGroup)
                                             .input('id_Lesson', sql.BigInt, body.ID_Lesson)
@@ -284,6 +298,7 @@ export default async function addPSchedules(req: any, res: any): Promise<void> {
                                             .input('numberLessons', sql.Int, body.NumberLesson)
                                             .input('daysofweek', sql.NVarChar, body.DaysOfWeek)
                                             .input('kindofschedules', sql.NVarChar, body.KindOfSchedules)
+                                            .input('kindofsemester', sql.NVarChar, dataSemester)
                                             .query(insertQuery);
                                         const groupId = body.NameGroup;
                                         const payload = { id: groupId };
@@ -291,7 +306,7 @@ export default async function addPSchedules(req: any, res: any): Promise<void> {
                                         res.cookie('jwtpuorg', token, {
                                             httpOnly: true,
                                             secure: true,
-                                            sameSite: 'none',
+                                            sameSite: 'strict',
                                             expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
                                         });
                                         res.status(201).json({
@@ -308,15 +323,17 @@ export default async function addPSchedules(req: any, res: any): Promise<void> {
                 }
             }
         } else {
+            console.log(dataSemester);
             const checkQueryRoom = `SELECT ID_PSchedule FROM PSchedule WHERE 
             ID_Room = @id_rooms AND
             NumberLessons = @numberLessons AND DaysOfWeek = @daysofweek AND
-            KindOfSchedules = @kindofschedules;`;
+            KindOfSchedules = @kindofschedules AND KindOfSemester = @kindofsemester;`;
             const resultCheckRoom = await pool.request()
                 .input('id_rooms', sql.BigInt, body.ID_Room)
                 .input('numberLessons', sql.Int, body.NumberLesson)
                 .input('daysofweek', sql.NVarChar, body.DaysOfWeek)
                 .input('kindofschedules', sql.NVarChar, body.KindOfSchedules)
+                .input('kindofsemester', sql.NVarChar, dataSemester)
                 .query(checkQueryRoom);
             if (resultCheckRoom.recordset.length > 0) {
                 res.status(201).json({
@@ -326,13 +343,14 @@ export default async function addPSchedules(req: any, res: any): Promise<void> {
                 const checkQuery = `SELECT ID_PSchedule FROM PSchedule WHERE 
                 ID_Group = (Select ID_Group From Groups Where NameGroup = @id_Groups) AND
                 NumberLessons = @numberLessons AND DaysOfWeek = @daysofweek AND
-                KindOfSchedules = @kindofschedules;`;
+                KindOfSchedules = @kindofschedules AND KindOfSemester = @kindofsemester;`;
 
                 const resultCheck = await pool.request()
                     .input('id_Groups', sql.NVarChar, body.NameGroup)
                     .input('numberLessons', sql.Int, body.NumberLesson)
                     .input('daysofweek', sql.NVarChar, body.DaysOfWeek)
                     .input('kindofschedules', sql.NVarChar, body.KindOfSchedules)
+                    .input('kindofsemester', sql.NVarChar, dataSemester)
                     .query(checkQuery);
 
                 if (resultCheck.recordset.length > 0) {
@@ -344,11 +362,12 @@ export default async function addPSchedules(req: any, res: any): Promise<void> {
                     const checkQueryTeacher = `SELECT ID_PSchedule FROM PSchedule WHERE 
                     ID_user = (Select ID_TrueUser From TempIDUser Where Temp_ID_User = @id_Teachers) AND
                     NumberLessons = @numberLessons AND DaysOfWeek = @daysofweek AND
-                    KindOfSchedules = @kindofschedules;`;
+                    KindOfSchedules = @kindofschedules AND KindOfSemester = @kindofsemester;`;
                     const resultCheckTeacher = await pool.request()
                         .input('id_Teachers', sql.BigInt, body.ID_user)
                         .input('numberLessons', sql.Int, body.NumberLesson)
                         .input('daysofweek', sql.NVarChar, body.DaysOfWeek)
+                        .input('kindofsemester', sql.NVarChar, dataSemester)
                         .input('kindofschedules', sql.NVarChar, body.KindOfSchedules)
                         .query(checkQueryTeacher);
                         console.log(body.ID_user);
@@ -439,10 +458,11 @@ export default async function addPSchedules(req: any, res: any): Promise<void> {
                                     errormessagehour: 'Вы больше не можете назначить пару, так как вы превышаете установленную нагрузку на преподавателя'
                                 });
                             } else {
+                                console.log("Это где-то здесь?");
                                 const insertQuery = `
-                                 INSERT INTO PSchedule (ID_Group, ID_Lesson, ID_Room, ID_user , NumberLessons, DaysOfWeek, KindOfSchedules)
-                                 VALUES ((Select ID_Group From Groups Where NameGroup = @id_Groups), @id_Lesson, @id_Room,(Select ID_TrueUser From TempIDUser Where Temp_ID_User = @id_User),
-                                 @numberLessons, @daysofweek, @kindofschedules);`;
+                                                INSERT INTO PSchedule (ID_Group, ID_Lesson, ID_Room, ID_user , NumberLessons, DaysOfWeek, KindOfSchedules, KindOfSemester)
+                                                VALUES ((Select ID_Group From Groups Where NameGroup = @id_Groups), @id_Lesson, @id_Room,(Select ID_TrueUser From TempIDUser Where Temp_ID_User = @id_User),
+                                                @numberLessons, @daysofweek, @kindofschedules, @kindofsemester);`;
                                 const InsertedResult = await pool.request()
                                     .input('id_Groups', sql.NVarChar, body.NameGroup)
                                     .input('id_Lesson', sql.BigInt, body.ID_Lesson)
@@ -451,6 +471,7 @@ export default async function addPSchedules(req: any, res: any): Promise<void> {
                                     .input('numberLessons', sql.Int, body.NumberLesson)
                                     .input('daysofweek', sql.NVarChar, body.DaysOfWeek)
                                     .input('kindofschedules', sql.NVarChar, body.KindOfSchedules)
+                                    .input('kindofsemester', sql.NVarChar, dataSemester)
                                     .query(insertQuery);
                                 const groupId = body.NameGroup;
                                 const payload = { id: groupId };
@@ -458,7 +479,7 @@ export default async function addPSchedules(req: any, res: any): Promise<void> {
                                 res.cookie('jwtpuorg', token, {
                                     httpOnly: true,
                                     secure: true,
-                                    sameSite: 'none',
+                                    sameSite: 'strict',
                                     expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
                                 });
                                 res.status(201).json({

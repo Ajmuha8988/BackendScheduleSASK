@@ -21,7 +21,7 @@ export const getPschedulePartNumerator = async (req: Request, res: Response) => 
             .query(`With PSchedulePartNumerator as (
 	    Select NameLesson, NameGroup, NameRoom, Lastname, Firstname, Patronymic,
 		NumberLessons, DaysOfWeek, KindOfSchedules, Groups.ID_Group, ID_PSchedule,
-		Temp_ID_User
+		Temp_ID_User, KindOfSemester
 	    From PSchedule
 	    Inner Join Lessons On Lessons.ID_Lesson = PSchedule.ID_Lesson
 		Inner Join Groups On Groups.ID_Group = PSchedule.ID_Group
