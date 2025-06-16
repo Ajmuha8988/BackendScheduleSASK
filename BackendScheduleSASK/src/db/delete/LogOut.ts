@@ -24,9 +24,19 @@ export default async function logOut(req: any, res: any): Promise<void> {
             .input('newValue', sql.BigInt, tempIdUser)
             .input('idUser', sql.BigInt, decodedToken.id)
             .query(updateQuery);
-        res.clearCookie('jwt'); // Имя вашего кукина параметра
-        res.clearCookie('jwtpuorg'); // Имя вашего кукина параметра
-        res.json({ success: true });
+            res.clearCookie('jwt', {
+                path: '/',           // Совпадает с предыдущими настройками
+                secure: true,        // Опять используем secure
+                httpOnly: true,      // Сохраняем HTTP Only
+                sameSite: 'none', 
+            }); // Имя вашего кукина параметра
+            res.clearCookie('jwtpuorg', {
+                path: '/',           // Совпадает с предыдущими настройками
+                secure: true,        // Опять используем secure
+                httpOnly: true,      // Сохраняем HTTP Only
+                sameSite: 'none', 
+            }); // Имя вашего кукина параметра
+            res.json({ success: true });
 
     } catch (error) {
         console.error('Error in server:', error);
