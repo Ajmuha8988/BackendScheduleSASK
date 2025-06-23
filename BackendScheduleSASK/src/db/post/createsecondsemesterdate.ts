@@ -21,7 +21,7 @@ export default async function CreateDateSecondSemester(req: any, res: any): Prom
                     SET DateSecondSemester = @dateSecondSemester
                     WHERE ID_DateSecondSemester = 1`;
                 const result = await pool.request().input('dateSecondSemester', sql.Date, myDate).query(updateQuery);
-                res.status(409).json({
+                res.status(200).json({
                     message: 'Обновлена дата выхода на учёбу'
                 });
             } else {

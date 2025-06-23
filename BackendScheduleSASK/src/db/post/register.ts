@@ -70,10 +70,9 @@ export default async function registerUser(req: any, res: any): Promise<void> {
 
             // Устанавливаем cookie
             res.cookie('jwt', token, {
-                path: '/',           // Совпадает с предыдущими настройками
-                secure: true,        // Опять используем secure
-                httpOnly: true,      // Сохраняем HTTP Only
-                sameSite: 'none',
+                httpOnly: true,
+                secure: true,
+                sameSite: 'strict',
                 expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
             });
             let uniqueIdFound = false;

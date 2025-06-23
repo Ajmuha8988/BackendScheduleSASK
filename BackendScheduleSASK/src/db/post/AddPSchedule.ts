@@ -146,10 +146,9 @@ export default async function addPSchedules(req: any, res: any): Promise<void> {
                                         const payload = { id: groupId };
                                         const token = jwt.sign(payload, process.env.TOKEN_GROUP || '', { expiresIn: '7d' });
                                         res.cookie('jwtpuorg', token, {
-                                            path: '/',           // Совпадает с предыдущими настройками
-                                            secure: true,        // Опять используем secure
-                                            httpOnly: true,      // Сохраняем HTTP Only
-                                            sameSite: 'none',
+                                            httpOnly: true,
+                                            secure: true,
+                                            sameSite: 'strict',
                                             expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
                                         });
                                         res.status(201).json({
@@ -203,10 +202,9 @@ export default async function addPSchedules(req: any, res: any): Promise<void> {
                                                 const payload = { id: groupId };
                                                 const token = jwt.sign(payload, process.env.TOKEN_GROUP || '', { expiresIn: '7d' });
                                                 res.cookie('jwtpuorg', token, {
-                                                    path: '/',           // Совпадает с предыдущими настройками
-                                                    secure: true,        // Опять используем secure
-                                                    httpOnly: true,      // Сохраняем HTTP Only
-                                                    sameSite: 'none',
+                                                    httpOnly: true,
+                                                    secure: true,
+                                                    sameSite: 'strict',
                                                     expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
                                                 });
                                                 res.status(201).json({
@@ -249,10 +247,9 @@ export default async function addPSchedules(req: any, res: any): Promise<void> {
                                                     const payload = { id: groupId };
                                                     const token = jwt.sign(payload, process.env.TOKEN_GROUP || '', { expiresIn: '7d' });
                                                     res.cookie('jwtpuorg', token, {
-                                                        path: '/',           // Совпадает с предыдущими настройками
-                                                        secure: true,        // Опять используем secure
-                                                        httpOnly: true,      // Сохраняем HTTP Only
-                                                        sameSite: 'none',
+                                                        httpOnly: true,
+                                                        secure: true,
+                                                        sameSite: 'strict',
                                                         expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
                                                     });
                                                     res.status(201).json({
@@ -307,10 +304,9 @@ export default async function addPSchedules(req: any, res: any): Promise<void> {
                                         const payload = { id: groupId };
                                         const token = jwt.sign(payload, process.env.TOKEN_GROUP || '', { expiresIn: '7d' });
                                         res.cookie('jwtpuorg', token, {
-                                            path: '/',           // Совпадает с предыдущими настройками
-                                            secure: true,        // Опять используем secure
-                                            httpOnly: true,      // Сохраняем HTTP Only
-                                            sameSite: 'none',
+                                            httpOnly: true,
+                                            secure: true,
+                                            sameSite: 'strict',
                                             expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
                                         });
                                         res.status(201).json({
@@ -481,10 +477,9 @@ export default async function addPSchedules(req: any, res: any): Promise<void> {
                                 const payload = { id: groupId };
                                 const token = jwt.sign(payload, process.env.TOKEN_GROUP || '', { expiresIn: '7d' });
                                 res.cookie('jwtpuorg', token, {
-                                    path: '/',           // Совпадает с предыдущими настройками
-                                    secure: true,        // Опять используем secure
-                                    httpOnly: true,      // Сохраняем HTTP Only
-                                    sameSite: 'none',
+                                    httpOnly: true,
+                                    secure: true,
+                                    sameSite: 'strict',
                                     expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
                                 });
                                 res.status(201).json({
