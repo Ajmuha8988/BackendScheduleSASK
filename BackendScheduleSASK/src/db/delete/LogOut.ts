@@ -24,8 +24,16 @@ export default async function logOut(req: any, res: any): Promise<void> {
             .input('newValue', sql.BigInt, tempIdUser)
             .input('idUser', sql.BigInt, decodedToken.id)
             .query(updateQuery);
-        res.clearCookie('jwt'); // Имя вашего кукина параметра
-        res.clearCookie('jwtpuorg'); // Имя вашего кукина параметра
+        res.clearCookie('jwt', {
+            httpOnly: true,
+            secure: true,
+            sameSite: 'strict'
+        });
+        res.clearCookie('jwtpuorg', {
+            httpOnly: true,
+            secure: true,
+            sameSite: 'strict'
+        }); // Имя вашего кукина параметра
         res.json({ success: true });
 
     } catch (error) {
