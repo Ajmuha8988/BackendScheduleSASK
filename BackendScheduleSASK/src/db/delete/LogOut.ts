@@ -27,12 +27,12 @@ export default async function logOut(req: any, res: any): Promise<void> {
         res.clearCookie('jwt', {
             httpOnly: true,
             secure: true,
-            sameSite: 'strict'
+            sameSite: 'none'
         });
         res.clearCookie('jwtpuorg', {
             httpOnly: true,
             secure: true,
-            sameSite: 'strict'
+            sameSite: 'none'
         }); // Имя вашего кукина параметра
         res.json({ success: true });
 

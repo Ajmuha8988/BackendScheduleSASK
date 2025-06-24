@@ -148,7 +148,7 @@ export default async function addPSchedules(req: any, res: any): Promise<void> {
                                         res.cookie('jwtpuorg', token, {
                                             httpOnly: true,
                                             secure: true,
-                                            sameSite: 'strict',
+                                            sameSite: 'none',
                                             expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
                                         });
                                         res.status(201).json({
@@ -204,7 +204,7 @@ export default async function addPSchedules(req: any, res: any): Promise<void> {
                                                 res.cookie('jwtpuorg', token, {
                                                     httpOnly: true,
                                                     secure: true,
-                                                    sameSite: 'strict',
+                                                    sameSite: 'none',
                                                     expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
                                                 });
                                                 res.status(201).json({
@@ -249,7 +249,7 @@ export default async function addPSchedules(req: any, res: any): Promise<void> {
                                                     res.cookie('jwtpuorg', token, {
                                                         httpOnly: true,
                                                         secure: true,
-                                                        sameSite: 'strict',
+                                                        sameSite: 'none',
                                                         expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
                                                     });
                                                     res.status(201).json({
@@ -294,11 +294,11 @@ export default async function addPSchedules(req: any, res: any): Promise<void> {
                                             .input('id_Groups', sql.NVarChar, body.NameGroup)
                                             .input('id_Lesson', sql.BigInt, body.ID_Lesson)
                                             .input('id_Room', sql.BigInt, body.ID_Room)
+                                            .input('kindofschedules', sql.NVarChar, body.KindOfSchedules)
+                                            .input('kindofsemester', sql.NVarChar, dataSemester)
                                             .input('id_User', sql.BigInt, body.ID_user)
                                             .input('numberLessons', sql.Int, body.NumberLesson)
                                             .input('daysofweek', sql.NVarChar, body.DaysOfWeek)
-                                            .input('kindofschedules', sql.NVarChar, body.KindOfSchedules)
-                                            .input('kindofsemester', sql.NVarChar, dataSemester)
                                             .query(insertQuery);
                                         const groupId = body.NameGroup;
                                         const payload = { id: groupId };
@@ -306,7 +306,7 @@ export default async function addPSchedules(req: any, res: any): Promise<void> {
                                         res.cookie('jwtpuorg', token, {
                                             httpOnly: true,
                                             secure: true,
-                                            sameSite: 'strict',
+                                            sameSite: 'none',
                                             expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
                                         });
                                         res.status(201).json({
@@ -479,7 +479,7 @@ export default async function addPSchedules(req: any, res: any): Promise<void> {
                                 res.cookie('jwtpuorg', token, {
                                     httpOnly: true,
                                     secure: true,
-                                    sameSite: 'strict',
+                                    sameSite: 'none',
                                     expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
                                 });
                                 res.status(201).json({

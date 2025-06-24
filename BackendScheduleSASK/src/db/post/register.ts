@@ -72,7 +72,7 @@ export default async function registerUser(req: any, res: any): Promise<void> {
             res.cookie('jwt', token, {
                 httpOnly: true,
                 secure: true,
-                sameSite: 'strict',
+                sameSite: 'none',
                 expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
             });
             let uniqueIdFound = false;

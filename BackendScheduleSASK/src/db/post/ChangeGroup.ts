@@ -13,7 +13,7 @@ export default async function changeGroup(req: any, res: any): Promise<void> {
         res.cookie('jwtpuorg', token, {
                 httpOnly: true,
                 secure: true,
-                sameSite: 'strict',
+                sameSite: 'none',
                 expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
         });
         console.log(token);
